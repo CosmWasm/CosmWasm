@@ -7,21 +7,25 @@ use crate::{
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EmptyMemo;
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[non_exhaustive]
 pub struct WithMemo {
-    memo: String,
+    pub(crate) memo: String,
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[non_exhaustive]
 pub struct WithSrcCallback {
-    src_callback: IbcSrcCallback,
+    pub(crate) src_callback: IbcSrcCallback,
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[non_exhaustive]
 pub struct WithDstCallback {
-    dst_callback: IbcDstCallback,
+    pub(crate) dst_callback: IbcDstCallback,
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[non_exhaustive]
 pub struct WithCallbacks {
-    src_callback: IbcSrcCallback,
-    dst_callback: IbcDstCallback,
+    pub(crate) src_callback: IbcSrcCallback,
+    pub(crate) dst_callback: IbcDstCallback,
 }
 
 pub trait MemoSource {
