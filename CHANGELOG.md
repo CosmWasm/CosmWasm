@@ -31,6 +31,9 @@ and this project adheres to
   process. ([#2155])
 - cosmwasm-vm: Updated wasmer to 5.0.4 ([#2374])
 - cosmwasm-vm: Charge gas for `write_region` ([#2378])
+- cosmwasm-vm: The testing functions `cosmwasm_vm::testing::*` do not require
+  the contract's message types to implement `schemars::JsonSchema` anymore. This
+  makes the use of `schemars` optional for contracts. ([#2201])
 
 ## Fixed
 
@@ -39,6 +42,7 @@ and this project adheres to
 - cosmwasm-vm: Fix CWA-2025-002.
 
 [#2155]: https://github.com/CosmWasm/cosmwasm/issues/2155
+[#2201]: https://github.com/CosmWasm/cosmwasm/issues/2201
 [#2268]: https://github.com/CosmWasm/cosmwasm/issues/2268
 [#2269]: https://github.com/CosmWasm/cosmwasm/issues/2269
 [#2310]: https://github.com/CosmWasm/cosmwasm/pull/2310
