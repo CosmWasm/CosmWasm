@@ -1192,12 +1192,19 @@ jobs:
           name: Install necessary packages
           command: |
             apk update
-            apk add mold clang curl coreutils gnupg llvm19-dev zlib-static clang19-static
+            apk add mold clang curl coreutils llvm19-dev zlib-static clang19-static
       - run:
           name: Install grcov
           command: |
             rustup component add llvm-tools-preview
             cargo install grcov --locked
+      - run:
+          name: Install codecov uploader
+          command: |
+            #download Codecov CLI
+            curl -Os https://cli.codecov.io/v10.1.0/alpine/codecov
+            chmod +x codecov
+            ./codecov --help
       - run:
           name: Run tests with coverage
           command: |
@@ -1213,30 +1220,33 @@ jobs:
           environment:
             RUSTFLAGS: "-Clinker=clang -Clink-arg=-fuse-ld=/usr/bin/mold -Cinstrument-coverage"
             LLVM_PROFILE_FILE: "cosmwasm-%p-%m.profraw"
-      - run:
-          name: Quick fix for GPG error in Codecov
-          command: mkdir -p ~/.gnupg
       - codecov/upload:
+          binary: ./codecov
           files: reports/core.info
           disable_search: true
           flags: cosmwasm-core
       - codecov/upload:
+          binary: ./codecov
           files: reports/crypto.info
           disable_search: true
           flags: cosmwasm-crypto
       - codecov/upload:
+          binary: ./codecov
           files: reports/derive.info
           disable_search: true
           flags: cosmwasm-derive
       - codecov/upload:
+          binary: ./codecov
           files: reports/schema.info
           disable_search: true
           flags: cosmwasm-schema
       - codecov/upload:
+          binary: ./codecov
           files: reports/std.info
           disable_search: true
           flags: cosmwasm-std
       - codecov/upload:
+          binary: ./codecov
           files: reports/vm.info
           disable_search: true
           flags: cosmwasm-vm
