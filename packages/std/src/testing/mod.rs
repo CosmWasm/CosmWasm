@@ -12,8 +12,6 @@ pub use assertions::assert_approx_eq_impl;
 pub use assertions::assert_hash_works_impl;
 
 pub use message_info::message_info;
-#[allow(deprecated)]
-pub use mock::mock_info;
 #[cfg(feature = "cosmwasm_1_3")]
 pub use mock::DistributionQuerier;
 #[cfg(feature = "staking")]

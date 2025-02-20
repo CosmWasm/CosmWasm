@@ -38,7 +38,7 @@ use crate::query::{DelegatorWithdrawAddressResponse, DistributionQuery};
 use crate::results::{ContractResult, Empty, SystemResult};
 use crate::storage::MemoryStorage;
 use crate::traits::{Api, Querier, QuerierResult};
-use crate::types::{BlockInfo, ContractInfo, Env, MessageInfo, TransactionInfo};
+use crate::types::{BlockInfo, ContractInfo, Env, TransactionInfo};
 use crate::{from_json, to_json_binary, Binary, Uint128};
 #[cfg(feature = "cosmwasm_1_3")]
 use crate::{
@@ -404,16 +404,6 @@ pub fn mock_env() -> Env {
         contract: ContractInfo {
             address: contract_addr,
         },
-    }
-}
-
-/// Just set sender and funds for the message.
-/// This is intended for use in test code only.
-#[deprecated(note = "This is inconvenient and unsafe. Use message_info instead.")]
-pub fn mock_info(sender: &str, funds: &[Coin]) -> MessageInfo {
-    MessageInfo {
-        sender: Addr::unchecked(sender),
-        funds: funds.to_vec(),
     }
 }
 
@@ -1262,22 +1252,6 @@ mod tests {
     fn mock_env_matches_mock_contract_addr() {
         let contract_address = mock_env().contract.address;
         assert_eq!(contract_address, Addr::unchecked(MOCK_CONTRACT_ADDR));
-    }
-
-    #[test]
-    fn mock_info_works() {
-        #[allow(deprecated)]
-        let info = mock_info("my name", &coins(100, "atom"));
-        assert_eq!(
-            info,
-            MessageInfo {
-                sender: Addr::unchecked("my name"),
-                funds: vec![Coin {
-                    amount: 100u128.into(),
-                    denom: "atom".into(),
-                }]
-            }
-        );
     }
 
     #[test]
