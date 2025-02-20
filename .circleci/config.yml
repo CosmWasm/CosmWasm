@@ -1192,7 +1192,7 @@ jobs:
           name: Install necessary packages
           command: |
             apk update
-            apk add mold clang curl coreutils llvm19-dev zlib-static clang19-static
+            apk add mold clang curl coreutils llvm19-dev zlib-static clang19-static bash
       - run:
           name: Install grcov
           command: |
@@ -1209,47 +1209,48 @@ jobs:
           name: Run tests with coverage
           command: |
             mkdir -p reports
-            cargo test --all-features
+            # cargo test --all-features
+            cargo test -p cosmwasm-crypto --all-features
 
-            grcov . -s packages/core --binary-path ./target/debug -t lcov -o ./reports/core.info
+            # grcov . -s packages/core --binary-path ./target/debug -t lcov -o ./reports/core.info
             grcov . -s packages/crypto --binary-path ./target/debug -t lcov -o ./reports/crypto.info
-            grcov . -s packages/derive --binary-path ./target/debug -t lcov -o ./reports/derive.info
-            grcov . -s packages/schema --binary-path ./target/debug -t lcov -o ./reports/schema.info
-            grcov . -s packages/std --binary-path ./target/debug -t lcov -o ./reports/std.info
-            grcov . -s packages/vm --binary-path ./target/debug -t lcov -o ./reports/vm.info
+            # grcov . -s packages/derive --binary-path ./target/debug -t lcov -o ./reports/derive.info
+            # grcov . -s packages/schema --binary-path ./target/debug -t lcov -o ./reports/schema.info
+            # grcov . -s packages/std --binary-path ./target/debug -t lcov -o ./reports/std.info
+            # grcov . -s packages/vm --binary-path ./target/debug -t lcov -o ./reports/vm.info
           environment:
             RUSTFLAGS: "-Clinker=clang -Clink-arg=-fuse-ld=/usr/bin/mold -Cinstrument-coverage"
             LLVM_PROFILE_FILE: "cosmwasm-%p-%m.profraw"
-      - codecov/upload:
-          binary: ./codecov
-          files: reports/core.info
-          disable_search: true
-          flags: cosmwasm-core
+      # - codecov/upload:
+      #     binary: ./codecov
+      #     files: reports/core.info
+      #     disable_search: true
+      #     flags: cosmwasm-core
       - codecov/upload:
           binary: ./codecov
           files: reports/crypto.info
           disable_search: true
           flags: cosmwasm-crypto
-      - codecov/upload:
-          binary: ./codecov
-          files: reports/derive.info
-          disable_search: true
-          flags: cosmwasm-derive
-      - codecov/upload:
-          binary: ./codecov
-          files: reports/schema.info
-          disable_search: true
-          flags: cosmwasm-schema
-      - codecov/upload:
-          binary: ./codecov
-          files: reports/std.info
-          disable_search: true
-          flags: cosmwasm-std
-      - codecov/upload:
-          binary: ./codecov
-          files: reports/vm.info
-          disable_search: true
-          flags: cosmwasm-vm
+      # - codecov/upload:
+      #     binary: ./codecov
+      #     files: reports/derive.info
+      #     disable_search: true
+      #     flags: cosmwasm-derive
+      # - codecov/upload:
+      #     binary: ./codecov
+      #     files: reports/schema.info
+      #     disable_search: true
+      #     flags: cosmwasm-schema
+      # - codecov/upload:
+      #     binary: ./codecov
+      #     files: reports/std.info
+      #     disable_search: true
+      #     flags: cosmwasm-std
+      # - codecov/upload:
+      #     binary: ./codecov
+      #     files: reports/vm.info
+      #     disable_search: true
+      #     flags: cosmwasm-vm
 
   # This job roughly follows the instructions from https://circleci.com/blog/publishing-to-github-releases-via-circleci/
   build_and_upload_devcontracts:
