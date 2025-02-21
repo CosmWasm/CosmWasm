@@ -1201,7 +1201,7 @@ jobs:
           name: Install codecov uploader
           command: |
             #download Codecov CLI
-            curl -Os https://cli.codecov.io/v10.1.0/alpine/codecov
+            curl -Os https://cli.codecov.io/v10.1.1/alpine/codecov
             chmod +x codecov
             ./codecov --help
       - run:
