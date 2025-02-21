@@ -1193,7 +1193,7 @@ jobs:
             apk update
             # first line is needed for grcov and compiling the tests, second line for codecov wrapper
             apk add --no-cache mold clang curl llvm19-dev zlib-static clang19-static \
-              coreutils gnupg bash
+              coreutils bash gnupg
       - run:
           name: Install grcov
           command: |
@@ -1202,15 +1202,9 @@ jobs:
       - run:
           name: Install codecov uploader
           command: |
-            #download Codecov CLI
-            curl -Os https://cli.codecov.io/v10.1.1/alpine/codecov
-            chmod +x codecov
-            ./codecov --help
-
             #download Codecov wrapper
-            curl -Os https://github.com/codecov/wrapper/blob/v0.1.0/dist/codecov.sh
+            curl -Os https://raw.githubusercontent.com/codecov/wrapper/refs/tags/v0.1.0/dist/codecov.sh
             chmod +x codecov.sh
-            ./codecov.sh --help
       - run:
           name: Run tests with coverage
           command: |
@@ -1234,17 +1228,16 @@ jobs:
             # ./codecov --verbose do-upload -F cosmwasm-crypto -f reports/crypto.info --disable-search --fail-on-error -t "$CODECOV_TOKEN"
             # ./codecov --verbose do-upload -F cosmwasm-derive -f reports/derive.info --disable-search --fail-on-error -t "$CODECOV_TOKEN"
             # ./codecov --verbose do-upload -F cosmwasm-schema -f reports/schema.info --disable-search --fail-on-error -t "$CODECOV_TOKEN"
-            echo "$CIRCLE_SHA1" "$CIRCLE_PR_NUMBER"
+            echo "$CIRCLE_SHA1" "$CIRCLE_PR_NUMBER" "$CIRCLE_BRANCH"
             # ./codecov --verbose upload-process -F cosmwasm-std -f reports/std.info --disable-search --fail-on-error --git-service github -C "$CIRCLE_SHA1" -P "$CIRCLE_PR_NUMBER" -t "$CODECOV_TOKEN"
             # ./codecov --verbose do-upload -F cosmwasm-vm -f reports/vm.info --disable-search --fail-on-error -t "$CODECOV_TOKEN"
-            ./codecov.sh
+            CC_FILES="reports/std.info" CC_FLAGS="cosmwasm-std" ./codecov.sh
           environment:
-            CC_BINARY: ./codecov
+            CC_VERSION: "v10.1.1" # Pin the version of the codecov uploader
+            CC_BRANCH: "$CIRCLE_BRANCH"
             CC_PR: "$CIRCLE_PR_NUMBER"
             CC_SHA: "$CIRCLE_SHA1"
             CC_TOKEN: "$CODECOV_TOKEN"
-            CC_FILES: "reports/std.info"
-            CC_FLAGS: "cosmwasm-std"
 
   # This job roughly follows the instructions from https://circleci.com/blog/publishing-to-github-releases-via-circleci/
   build_and_upload_devcontracts:
