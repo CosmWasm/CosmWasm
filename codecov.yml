@@ -10,11 +10,12 @@ coverage:
         threshold: 0.05%
 
 fixes:
-  - "/cosmwasm/::" # reduce root, e.g. "/cosmwasm/path/" => "path/"
+  - "/root/project/::" # reduce root, e.g. "/root/project/path/" => "path/"
 
 ignore:
   - "contracts"
-  - /usr
+  - usr/local
+  - rustc/*
 
 flags:
   cosmwasm-crypto:
