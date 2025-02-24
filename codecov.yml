@@ -9,6 +9,9 @@ coverage:
       default:
         threshold: 0.05%
 
+fixes:
+  - "/cosmwasm/::" # reduce root, e.g. "/cosmwasm/path/" => "path/"
+
 ignore:
   - "contracts"
 
