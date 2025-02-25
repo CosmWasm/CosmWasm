@@ -1198,30 +1198,37 @@ jobs:
             apk add --no-cache mold clang curl llvm19-dev zlib-static clang19-static \
               coreutils bash gnupg
       - run:
-          name: Install grcov
+          name: Install cargo-llvm-cov and cargo-nextest
           command: |
             rustup component add llvm-tools-preview
-            cargo install grcov --locked
+
+            # curl -L --proto '=https' --tlsv1.2 -OsSf https://github.com/mozilla/grcov/releases/download/v0.8.20/grcov-x86_64-unknown-linux-musl.tar.bz2
+            # tar -xjf grcov-x86_64-unknown-linux-musl.tar.bz2
+            # mv grcov /usr/local/bin/
+
+            curl -L --proto '=https' --tlsv1.2 -OsSf https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.92/cargo-nextest-0.9.92-x86_64-unknown-linux-musl.tar.gz
+            tar -xzf cargo-nextest-0.9.92-x86_64-unknown-linux-musl.tar.gz
+            mv cargo-nextest /usr/local/bin/
+
+            curl -L --proto '=https' --tlsv1.2 -OsSf https://github.com/taiki-e/cargo-llvm-cov/releases/download/v0.6.16/cargo-llvm-cov-x86_64-unknown-linux-musl.tar.gz
+            tar -xzf cargo-llvm-cov-x86_64-unknown-linux-musl.tar.gz
+            mv cargo-llvm-cov /usr/local/bin/
       - run:
           name: Install codecov uploader
           command: |
             #download Codecov wrapper
-            curl -Os https://raw.githubusercontent.com/codecov/wrapper/refs/tags/v0.1.0/dist/codecov.sh
+            curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/codecov/wrapper/refs/tags/v0.1.0/dist/codecov.sh
             chmod +x codecov.sh
       - run:
           name: Run tests with coverage
           command: |
             mkdir reports
-            cargo test --all-features
 
-            grcov . -s packages/core --binary-path ./target/debug -t lcov -o ./reports/core.info
-            grcov . -s packages/crypto --binary-path ./target/debug -t lcov -o ./reports/crypto.info
-            grcov . -s packages/derive --binary-path ./target/debug -t lcov -o ./reports/derive.info
-            grcov . -s packages/schema --binary-path ./target/debug -t lcov -o ./reports/schema.info
-            grcov . -s packages/std --binary-path ./target/debug -t lcov -o ./reports/std.info
-            grcov . -s packages/vm --binary-path ./target/debug -t lcov -o ./reports/vm.info
+            cargo llvm-cov --no-report nextest
+            cargo llvm-cov --no-report --doc
+            cargo llvm-cov report --doctests --lcov --output-path reports/lcov.info
           environment:
-            RUSTFLAGS: "-Clinker=clang -Clink-arg=-fuse-ld=/usr/bin/mold -Cinstrument-coverage"
+            RUSTFLAGS: "-Clinker=clang -Clink-arg=-fuse-ld=/usr/bin/mold"
             LLVM_PROFILE_FILE: "cosmwasm-%p-%m.profraw"
       - run:
           name: Upload coverage to Codecov
@@ -1229,12 +1236,14 @@ jobs:
             export CC_TOKEN="$CODECOV_TOKEN"
             export CC_PR="$CIRCLE_PR_NUMBER"
 
-            CC_FILES="reports/core.info" CC_FLAGS="cosmwasm-core" ./codecov.sh
-            CC_FILES="reports/crypto.info" CC_FLAGS="cosmwasm-crypto" ./codecov.sh
-            CC_FILES="reports/derive.info" CC_FLAGS="cosmwasm-derive" ./codecov.sh
-            CC_FILES="reports/schema.info" CC_FLAGS="cosmwasm-schema" ./codecov.sh
-            CC_FILES="reports/std.info" CC_FLAGS="cosmwasm-std" ./codecov.sh
-            CC_FILES="reports/vm.info" CC_FLAGS="cosmwasm-vm" ./codecov.sh
+            ./codecov.sh -f "reports/lcov.info"
+
+            # CC_FILES="reports/core.info" CC_FLAGS="cosmwasm-core" ./codecov.sh
+            # CC_FILES="reports/crypto.info" CC_FLAGS="cosmwasm-crypto" ./codecov.sh
+            # CC_FILES="reports/derive.info" CC_FLAGS="cosmwasm-derive" ./codecov.sh
+            # CC_FILES="reports/schema.info" CC_FLAGS="cosmwasm-schema" ./codecov.sh
+            # CC_FILES="reports/std.info" CC_FLAGS="cosmwasm-std" ./codecov.sh
+            # CC_FILES="reports/vm.info" CC_FLAGS="cosmwasm-vm" ./codecov.sh
           environment:
             CC_VERSION: "v10.1.1" # Pin the version of the codecov uploader
             CC_GIT_SERVICE: "github"

@@ -22,6 +22,9 @@ ignore:
   - "examples"
 
 flags:
+  cosmwasm-core:
+    paths:
+      - packages/core/
   cosmwasm-crypto:
     paths:
       - packages/crypto/
