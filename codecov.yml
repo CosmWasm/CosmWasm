@@ -15,7 +15,11 @@ fixes:
 ignore:
   - "contracts"
   - usr/local
-  - rustc/*
+  - "rustc"
+  - "src"
+  - "target"
+  - "tests"
+  - "examples"
 
 flags:
   cosmwasm-crypto:
